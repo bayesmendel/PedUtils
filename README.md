@@ -4,7 +4,7 @@ simulations+model evaluations
 Notes from Jane 6/19/2020
 - I added my family simulation functions this repo (prefixed with `sim.`). They are compatible with (and dependent on) the current PanelPRO package. 
 - Since the PanelPRO package is still being updated, the simulation functions may also need updates. Please let me know if you run into any issues. 
-- Example usage (need to first run ): 
+- Example usage (need to first run PanelPRO's `buildDataBase` and `calc_CP` functions on a dummy family to obtain the densty and survival functions for the appropriate cancers/genes): 
 
 ```
 library(PanelPRO)
