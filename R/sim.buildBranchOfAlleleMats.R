@@ -1,12 +1,12 @@
 #' Simulate a Person's Matrix of Alleles for a Series of Genes
 #' 
 #' Returns a \code{2} by \code{number of genes} matrix of zeros and ones, 
-#' indicating which alleles the person has for each of the \code{length(prevs)} 
+#' indicating which alleles the person has for each of the \code{length(alleleFreq)} 
 #' genes, simulated based on the supplied allele frequencies.
-#' @param prevs allele frequencies for each gene of interest 
+#' @param alleleFreq allele frequencies for each gene of interest 
 #' @family simulations
-sim.simAlleleMat = function(prevs) {
-  return(sapply(prevs, function(x){replicate(2, rbinom(1, 1, x))}))
+sim.simAlleleMat = function(alleleFreq) {
+  return(sapply(alleleFreq, function(x){replicate(2, rbinom(1, 1, x))}))
 }
 
 
@@ -45,7 +45,7 @@ sim.inheritAlleleMat = function(alleles1, alleles2) {
 #' possibly one or more of the parents) of the branch. The first dimension of the 3d 
 #' array will be equal to the number of progeny plus up to two additional parents. 
 #' The other two dimensions are \code{2} by \code{number of genes}. See Details. 
-#' @param prevs allele frequencies for each gene of interest
+#' @param alleleFreq allele frequencies for each gene of interest
 #' @param nProg number of progeny in this branch
 #' @param alleles \code{2} by \code{number of genes} matrix of alleles 
 #' for family member who creates this branch (optional)
@@ -56,7 +56,7 @@ sim.inheritAlleleMat = function(alleles1, alleles2) {
 #' first dimension of the 3d array, i.e. the first dimension will grow to 
 #' \code{nProg+1} or \code{nProg+2}. 
 #' @family simulations
-sim.buildBranchOfAlleleMats = function(prevs, nProg, alleles, allelesSpouse) {
+sim.buildBranchOfAlleleMats = function(alleleFreq, nProg, alleles, allelesSpouse) {
   # Check if the allele matrix for the branch head is not supplied
   isAddHead = missing(alleles)
   # Check if the allele matrix for the spouse is not supplied
@@ -64,11 +64,11 @@ sim.buildBranchOfAlleleMats = function(prevs, nProg, alleles, allelesSpouse) {
   
   # Simulate the branch head's allele matrix if not passed in 
   if (isAddHead) {
-    alleles = sim.simAlleleMat(prevs)
+    alleles = sim.simAlleleMat(alleleFreq)
   }
   # Simulate the spouse's allele matrix if not passed in 
   if (isAddSpouse) {
-    allelesSpouse = sim.simAlleleMat(prevs)
+    allelesSpouse = sim.simAlleleMat(alleleFreq)
   }
   
   # Generate allele matrices for each progeny, using Mendelian laws of inheritance

@@ -17,7 +17,7 @@ sim.allele2Geno = function(alleles) {
 #' 
 #' Returns a matrix of genotypes, with dimensions \code{number of members} 
 #' by \code{number of genes}
-#' @param prevs allele frequencies for each gene of interest
+#' @param alleleFreq allele frequencies for each gene of interest
 #' @param nChildPatern vector of length \code{2}, indicating the number of daughters 
 #' (father's sisters) and number of sons (father + his brothers) in the paternal branch
 #' @param nChildMatern vector of length \code{2}, indicating the number of daughters 
@@ -31,7 +31,7 @@ sim.allele2Geno = function(alleles) {
 #' with the proband as the first row.
 #' @family simulations
 #' @importFrom abind abind
-sim.buildGenoMat = function(prevs, nChildPatern, nChildMatern, 
+sim.buildGenoMat = function(alleleFreq, nChildPatern, nChildMatern, 
                             nChild, nGrandchildInBranches){ 
   if (length(nChildPatern) != 2) {
     stop("nChildPatern needs to be a numeric vector of length 2")
@@ -51,22 +51,22 @@ sim.buildGenoMat = function(prevs, nChildPatern, nChildMatern,
   
   # Simulate allele matrices for paternal grandparents and their children 
   # (including father, who is the first male child)
-  allelesPatern = sim.buildBranchOfAlleleMats(prevs, sum(nChildPatern))
+  allelesPatern = sim.buildBranchOfAlleleMats(alleleFreq, sum(nChildPatern))
   
   # Simulate allele matrices for maternal grandparents and their children 
   # (including mother, who is the first female child)
-  allelesMatern = sim.buildBranchOfAlleleMats(prevs, sum(nChildMatern))
+  allelesMatern = sim.buildBranchOfAlleleMats(alleleFreq, sum(nChildMatern))
   
   # Simulate allele matrices for proband and siblings using parents' allele matrices
   # Proband is the first child and is female
-  allelesChild = sim.buildBranchOfAlleleMats(prevs, sum(nChild),
+  allelesChild = sim.buildBranchOfAlleleMats(alleleFreq, sum(nChild),
                                              matrix(allelesMatern[3,,], nrow=2), 
                                              matrix(allelesPatern[3+nChildPatern[1],,], nrow=2))
   
   # Simulate allele matrices for each of proband and siblings' spouses and children
   # Proband's children come first
   allelesGrandchildInBranches = abind(lapply(1:nrow(nGrandchildInBranches), function(i){
-    sim.buildBranchOfAlleleMats(prevs, sum(nGrandchildInBranches[i,]), matrix(allelesChild[i,,], nrow=2))
+    sim.buildBranchOfAlleleMats(alleleFreq, sum(nGrandchildInBranches[i,]), matrix(allelesChild[i,,], nrow=2))
   }), along=1)
   
   # Put everything into the same 3d matrix
@@ -74,11 +74,11 @@ sim.buildGenoMat = function(prevs, nChildPatern, nChildMatern,
                   allelesGrandchildInBranches, along=1)
   
   # Return named matrix of genotypes 
-  genoMat = matrix(t(apply(alleles, 1, sim.allele2Geno)), ncol=length(prevs))
-  if (is.null(names(prevs))) {
+  genoMat = matrix(t(apply(alleles, 1, sim.allele2Geno)), ncol=length(alleleFreq))
+  if (is.null(names(alleleFreq))) {
     colnames(genoMat) = letters[1:ncol(genoMat)]
   } else {
-    colnames(genoMat) = names(prevs)
+    colnames(genoMat) = names(alleleFreq)
   }
   return(genoMat)
 }

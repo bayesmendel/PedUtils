@@ -1,3 +1,6 @@
+library(PanelPRO)
+library(abind)
+
 #' Simulate a Family/Pedigree Matrix
 #' 
 #' Returns a completed family matrix with the following columns for each member: 
@@ -37,7 +40,7 @@
 #' as a vector of length \code{2}, indicating the number of daughters and number of 
 #' sons that the proband and each of her siblings have, when they each have the same 
 #' number.
-#' @param prevs allele frequencies for each gene of interest (named vector). 
+#' @param alleleFreq allele frequencies for each gene of interest (named vector). 
 #' @param CP list of cancer penetrance matrices, separated by each gender. 
 #' @param genes vector of genes to include in the model. 
 #' @param cancers vector of cancers to include in the model. 
@@ -63,7 +66,7 @@
 #' @family simulations export
 #' @export
 sim.simFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild, 
-                      prevs, CP, genes, cancers, 
+                      alleleFreq, CP, genes, cancers, 
                       maxMut = 2, ageMax = 95, ageMin = 1, 
                       includeGeno=FALSE, includeGrandparents=TRUE,
                       censoring = TRUE, genderPro = NULL, genoMat = NULL,
@@ -73,12 +76,12 @@ sim.simFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
     stop("Cancers that are not in the CP object have been specified.")
   }
   
-  # Check that specified genes are in the vector of prevalences
-  if (any(!(genes %in% names(prevs)))) {
-    stop("Genos that are not in the vector of prevalences have been specified.")
+  # Check that specified genes are in the vector of allele frequencies
+  if (any(!(genes %in% names(alleleFreq)))) {
+    stop("Genos that are not in the vector of allele frequencies have been specified.")
   }
-  # Subset prevalences to only include thos genes
-  prevs = prevs[genes]
+  # Subset allele frequencies to only include thos genes
+  alleleFreq = alleleFreq[genes]
   
   # Get possible genotypes and check that they are in the CP object
   PG = PanelPRO:::.getPossibleGenotype(genes, max_mut = maxMut)$list
@@ -144,7 +147,7 @@ sim.simFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
   
   # Generate genotype matrix for family
   if(is.null(genoMat)){
-    genoMat = sim.buildGenoMat(prevs, nChildPatern, nChildMatern, 
+    genoMat = sim.buildGenoMat(alleleFreq, nChildPatern, nChildMatern, 
                                nChild, nGrandchildInBranches)
   }
   # Total number of people in family
