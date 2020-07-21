@@ -45,7 +45,7 @@ library(abind)
 #' @param genes vector of genes to include in the model. 
 #' @param cancers vector of cancers to include in the model. 
 #' @param maxMut maximum number of mutations to consider. Defaults to 2. 
-#' @param ageMax maximum age to consider. Defaults to 95.
+#' @param ageMax maximum age to consider. Defaults to 94.
 #' @param ageMin minimum age to consider. Defaults to 1. 
 #' @param includeGeno boolean flag, indicating whether or not to include genotype 
 #' matrix in output. Defaults to FALSE, and was mostly used for troubleshooting. 
@@ -67,7 +67,7 @@ library(abind)
 #' @export
 sim.simFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild, 
                       alleleFreq, CP, genes, cancers, 
-                      maxMut = 2, ageMax = 95, ageMin = 1, 
+                      maxMut = 2, ageMax = 94, ageMin = 1, 
                       includeGeno=FALSE, includeGrandparents=TRUE,
                       censoring = TRUE, genderPro = NULL, genoMat = NULL,
                       CurAge = NULL, affTime = FALSE) {

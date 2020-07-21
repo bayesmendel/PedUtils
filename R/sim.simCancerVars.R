@@ -15,7 +15,7 @@
 #' @param CP list of cancer penetrance matrices, one for each gender. 
 #' @param PG vector of possible genotypes. 
 #' @param cancers vector of cancers to include in the model. 
-#' @param ageMax maximum age to consider. Defaults to 95. 
+#' @param ageMax maximum age to consider. Defaults to 94. 
 #' @param censoring if FALSE, then will assume everyone without any cancers lives
 #' to the maximum age. Defaults to TRUE.
 #' @param affTime if TRUE, the output will include the cancer times (which may 
@@ -27,7 +27,7 @@
 #' and \code{Age} variables for each cancer, plus the two columns for any cancer. 
 #' @family simulations
 sim.simCancerVars = function(genoMat, Gender, CurAge, CP, PG, cancers, 
-                             ageMax = 95, censoring = TRUE, affTime = FALSE) {
+                             ageMax = 94, censoring = TRUE, affTime = FALSE) {
   # Short cancer names
   cancers_short = PanelPRO:::CANCER_NAME_MAP$short[PanelPRO:::CANCER_NAME_MAP$long %in% cancers]
   
