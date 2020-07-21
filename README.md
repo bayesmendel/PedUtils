@@ -1,4 +1,4 @@
-# PedUtil
+# PedUtils
 simulations+model evaluations
 
 Dependencies: `PanelPRO`, `abind`
@@ -15,7 +15,7 @@ library(PanelPRO)
 # Short cancer names (including CBC)
 cancers11 = c("BRA", "BC", "COL", "ENDO", "GAS", "KID", 
               "MELA", "OC", "PANC", "PROS", "SMA", "CBC")
-# Lookup long cancer names (don't include CBC)
+# Look up long cancer names (don't include CBC)
 cancers11_long = PanelPRO:::CANCER_NAME_MAP$long[sapply(cancers11[1:11], function(x){
   which(x==PanelPRO:::CANCER_NAME_MAP$short)
 })]
@@ -63,11 +63,12 @@ dummy.fam.checked = checkFam(dummy.fam, dummy.db)$ped_list[[1]]
 # Cancer penetrance densities and survivals
 CP = calcCancerPenetrance(dummy.fam.checked, dummy.db, 
                           max_mut=2, net=TRUE, consider.modification=FALSE)
+                          
+# Extract allele frequencies from database
+alleleFreq = PanelPRODatabase$AlleleFrequency[,"nonAJ"][genes]
 
 
 ## Simulate family
-# Extract allele frequencies from database
-prevs = PanelPRODatabase$AlleleFrequency[,"nonAJ"]
 
 # Paternal aunts, paternal uncles
 nSibsPatern = c(1, 2) 
@@ -82,7 +83,7 @@ nGrandchild = c(1, 2)
 
 # Simulate family using `PedUtils` code
 fam = sim.simFam(nSibsPatern, nSibsMatern, nSibs, nGrandchild, 
-                 prevs, CP, genes11, cancers11_long, includeGeno=FALSE)
+                 alleleFreq, CP, genes11, cancers11_long, includeGeno=FALSE)
 # PanelPRO can be run on the simulated family
 out = PanelPRO:::PanelPRO11(fam)
 ```
