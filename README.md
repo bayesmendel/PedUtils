@@ -13,48 +13,45 @@ library(PanelPRO)
 
 ## 11 cancers and 11 genes to use
 # Short cancer names (including CBC)
-cancers11 = c("BRA", "BC", "COL", "ENDO", "GAS", "KID", 
-              "MELA", "OC", "PANC", "PROS", "SMA", "CBC")
+cancers = c("BRA", "BC", "COL", "ENDO", "GAS", "KID", 
+            "MELA", "OC", "PANC", "PROS", "SMA", "CBC")
 # Look up long cancer names (don't include CBC)
-cancers11_long = PanelPRO:::CANCER_NAME_MAP$long[sapply(cancers11[1:11], function(x){
+cancers_long = PanelPRO:::CANCER_NAME_MAP$long[sapply(cancers[-length(cancers)], function(x){
   which(x==PanelPRO:::CANCER_NAME_MAP$short)
 })]
 # Genes
-genes11 = c("ATM", "BRCA1", "BRCA2", "CDKN2A", "CHEK2", "EPCAM", 
-            "MLH1", "MSH2", "MSH6", "PALB2", "PMS2")
+genes = c("ATM", "BRCA1", "BRCA2", "CDKN2A", "CHEK2", "EPCAM", 
+          "MLH1", "MSH2", "MSH6", "PALB2", "PMS2")
 
 
 ## Create a dummy family to generate penetrance densities and survivals
 # Empty data frame of cancer affectation statuses
-dummy.cancers = setNames(as.data.frame(matrix(0, nrow=4, ncol=12)), 
-                         paste0("isAff", cancers11))
+dummy.cancers = setNames(as.data.frame(matrix(0, nrow=2, ncol=length(cancers))), 
+                         paste0("isAff", cancers))
 # Empty data frame of cancer ages
-dummy.ages = setNames(as.data.frame(matrix(NA, nrow=4, ncol=12)), 
-                      paste0("Age", cancers11))
+dummy.ages = setNames(as.data.frame(matrix(NA, nrow=2, ncol=length(cancers))), 
+                      paste0("Age", cancers))
 # Dummy family
-dummy.fam = data.frame(ID=c(1,2,3,4), 
-                       MotherID=c(0,0,1,1), 
-                       FatherID=c(0,0,2,2), 
-                       Sex=c(0,1,0,1), 
-                       isProband=c(0,0,0,1), 
-                       Twins=c(0,0,0,0), 
-                       Ancestry=rep("nonAJ", 4), 
-                       CurAge=c(60,50,40,30), 
-                       isDead=c(0,0,0,0), 
-                       race=rep("All_Races", 4), 
+dummy.fam = data.frame(ID=c(1,2), 
+                       MotherID=c(0,1), 
+                       FatherID=c(0,1), 
+                       Sex=c(0,1), 
+                       isProband=c(0,1), 
+                       Twins=c(0,0), 
+                       Ancestry=rep("nonAJ", 2), 
+                       CurAge=c(60,30), 
+                       isDead=c(0,0), 
+                       race=rep("All_Races", 2), 
                        dummy.cancers, 
                        dummy.ages)
 # Assign no risk modifiers
 dummy.fam$interAge = dummy.fam$riskmod = list(character(0))
-# Give everybody breast cancer at various ages (to trigger CBC penetrances)
-dummy.fam$isAffBC = 1
-dummy.fam$AgeBC = c(55, 45, 35, 25)
 
 
 ## Get cancer penetrance densities and survivals from the dummy family
 # Build a dummy database
-dummy.db = buildDatabase(genes=genes11, 
-                         cancers=cancers11_long)
+dummy.db = buildDatabase(genes=genes, 
+                         cancers=cancers_long)
 dummy.db$Contralateral = PanelPRODatabase$Contralateral
 
 # Run `checkFam` on the dummy family
@@ -63,7 +60,7 @@ dummy.fam.checked = checkFam(dummy.fam, dummy.db)$ped_list[[1]]
 # Cancer penetrance densities and survivals
 CP = calcCancerPenetrance(dummy.fam.checked, dummy.db, 
                           max_mut=2, net=TRUE, consider.modification=FALSE)
-                          
+
 # Extract allele frequencies from database
 alleleFreq = PanelPRODatabase$AlleleFrequency[,"nonAJ"][genes]
 
@@ -83,7 +80,7 @@ nGrandchild = c(1, 2)
 
 # Simulate family using `PedUtils` code
 fam = sim.simFam(nSibsPatern, nSibsMatern, nSibs, nGrandchild, 
-                 alleleFreq, CP, genes11, cancers11_long, includeGeno=FALSE)
+                 alleleFreq, CP, genes, cancers_long, includeGeno=FALSE)
 # PanelPRO can be run on the simulated family
 out = PanelPRO:::PanelPRO11(fam)
 ```
