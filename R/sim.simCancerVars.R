@@ -16,6 +16,7 @@
 #' @param PG vector of possible genotypes. 
 #' @param cancers vector of cancers to include in the model. 
 #' @param ageMax maximum age to consider. Defaults to 94. 
+#' @param ageMin minimum age to consider. Defaults to 2. 
 #' @param censoring if FALSE, then will assume everyone without any cancers lives
 #' to the maximum age. Defaults to TRUE.
 #' @param affTime if TRUE, the output will include the cancer times (which may 
@@ -27,7 +28,8 @@
 #' and \code{Age} variables for each cancer, plus the two columns for any cancer. 
 #' @family simulations
 sim.simCancerVars = function(genoMat, Gender, CurAge, CP, PG, cancers, 
-                             ageMax = 94, censoring = TRUE, affTime = FALSE) {
+                             ageMax = 94, ageMin = 2, 
+                             censoring = TRUE, affTime = FALSE) {
   # Short cancer names
   cancers_short = PanelPRO:::CANCER_NAME_MAP$short[PanelPRO:::CANCER_NAME_MAP$long %in% cancers]
   
@@ -88,12 +90,14 @@ sim.simCancerVars = function(genoMat, Gender, CurAge, CP, PG, cancers,
     
     for(i in 1:N){ # Iterate over each person
       # Simulate time person was affected by cancer
-      affectedTime[i] = which(rmultinom(1, 1, prob=cancerDens[[Gender[i]+1]][j,genoCombsIdx[i],])[,1]==1)
+      affectedTime[i] = max(which(rmultinom(1, 1, prob=cancerDens[[Gender[i]+1]][j,genoCombsIdx[i],])[,1]==1), 
+                            ageMin)
     }
     
     # If the person was affected at or before current age, the person is considered 
     # affected for that cancer
-    isAffectMat[,j] = ifelse((affectedTime <= CurAge & affectedTime != ageMax + 1), 1, 0)
+    isAffectMat[,j] = ifelse((affectedTime <= CurAge & 
+                                affectedTime != ageMax + 1), 1, 0)
     # The age at which the person was affected should be the minimum of their current and 
     # affected ages (i.e. if person not affected, the age is just current age)
 
