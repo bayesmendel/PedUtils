@@ -91,3 +91,14 @@ out = PanelPRO:::PanelPRO11(fam)
     - Age ranges are currently hard-coded, with the first generation being centered at 85 and everybody else simulated based on that. This could be made more flexible/allow user inputs. 
     - You cannot simulate a family in which individuals have different prevalences/penetrances. 
     - Ancestry is automatically set to "nonAJ" and race is automatically set to "All_Races" (regardless of what prevalences/penetrances you feed in)
+    
+    
+    
+Notes for plotting the pedigree
+- dependencies: kinship2, RColorBrewer
+
+```
+library(PanelPRO)
+plotPed(small.fam)
+```
+
