@@ -31,7 +31,7 @@ sim.simCancerVars = function(genoMat, Gender, CurAge, CP, PG, cancers,
                              ageMax = 94, ageMin = 2, 
                              censoring = TRUE, affTime = FALSE) {
   # Short cancer names
-  cancers_short = PanelPRO:::CANCER_NAME_MAP$short[PanelPRO:::CANCER_NAME_MAP$long %in% cancers]
+  cancers_short = PanelPRO:::CANCER_NAME_MAP$short[match(cancers, PanelPRO:::CANCER_NAME_MAP$long)]
   
   # Total number of people in family
   N = nrow(genoMat)
