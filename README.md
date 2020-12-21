@@ -34,7 +34,7 @@ dummy.ages = setNames(as.data.frame(matrix(NA, nrow=2, ncol=length(cancers))),
 # Dummy family
 dummy.fam = data.frame(ID=c(1,2), 
                        MotherID=c(0,1), 
-                       FatherID=c(0,1), 
+                       FatherID=c(0,0), 
                        Sex=c(0,1), 
                        isProband=c(0,1), 
                        Twins=c(0,0), 
