@@ -62,15 +62,30 @@ library(abind)
 #' the current ages will be generated.
 #' @param affTime if TRUE, the output will include the cancer times (which may 
 #' or may not be observed due to censoring). Defaults to FALSE
+#' @param BiomarkerTesting list of biomarker testing sensitivities and specificities.
+#' @param includeBiomarkers boolean flag, indicating whether or not to simulate biomarkers 
+#' (Breast and Colorectal currently supported). Defaults to FALSE. 
+#' @param maxTries number of runs to attempt for simulating the allele 
+#' array and genotype matrix for all family members. Pathogenic variants 
+#' on both alleles for a given gene is currently not supported. When this 
+#' occurs or an individual has a simulated genotype with more than 
+#' maxMut simultaneous mutations, the function's solution is to re-simulate 
+#' the alleles/genotypes up to maxTries times. If an admissible allele array 
+#' or genotype matrix cannot be simulated after maxTries attempts, an 
+#' error will be raised. These scenarios are more likely to occur for large 
+#' values of alleleFreq. Defaults to 5 (each). 
 #' @details Assumes naming conventions for cancers are consistent between arguments.
 #' @family simulations export
 #' @export
 sim.simFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild, 
                       alleleFreq, CP, genes, cancers, 
                       maxMut = 2, ageMax = 94, ageMin = 2, 
-                      includeGeno=FALSE, includeGrandparents=TRUE,
-                      censoring = TRUE, genderPro = NULL, genoMat = NULL,
-                      CurAge = NULL, affTime = FALSE) {
+                      includeGeno = FALSE, includeGrandparents = TRUE, 
+                      censoring = TRUE, genderPro = NULL, 
+                      genoMat = NULL, CurAge = NULL, affTime = FALSE, 
+                      BiomarkerTesting = NULL, 
+                      includeBiomarkers = FALSE, 
+                      maxTries = 5) {
   # Check that specified cancers are in the CP object
   if (any(!(cancers %in% dimnames(CP$Dens)$cancers))) {
     stop("Cancers that are not in the CP object have been specified.")
@@ -78,9 +93,9 @@ sim.simFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
   
   # Check that specified genes are in the vector of allele frequencies
   if (any(!(genes %in% names(alleleFreq)))) {
-    stop("Genos that are not in the vector of allele frequencies have been specified.")
+    stop("Genes that are not in the vector of allele frequencies have been specified.")
   }
-  # Subset allele frequencies to only include thos genes
+  # Subset allele frequencies to only include those genes
   alleleFreq = alleleFreq[genes]
   
   # Get possible genotypes and check that they are in the CP object
@@ -148,8 +163,37 @@ sim.simFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
   # Generate genotype matrix for family
   if(is.null(genoMat)){
     genoMat = sim.buildGenoMat(alleleFreq, nChildPatern, nChildMatern, 
-                               nChild, nGrandchildInBranches)
+                               nChild, nGrandchildInBranches, maxTries)
   }
+  # Flag to see if any family members have genotypes with more than 
+  # maxMut mutations
+  maxMutExceeded = any(rowSums(genoMat) > maxMut)
+  # Intialize counter for re-runs
+  counter = 1
+  
+  # Re-build genotype matrix until maxMut is not exceeded for anybody, 
+  # or until the maximum number of runs has been hit. 
+  while(maxMutExceeded == TRUE && counter < maxTries) {
+    # Generate genotype matrix for family
+    genoMat = sim.buildGenoMat(alleleFreq, nChildPatern, nChildMatern, 
+                               nChild, nGrandchildInBranches, maxTries)
+    
+    # Flag to see if any family members have genotypes with more than 
+    # maxMut mutations
+    maxMutExceeded = any(rowSums(genoMat) > maxMut)
+    # Increment counter
+    counter = counter + 1
+    # Print message
+    print("Simulated genotype matrix contains genotypes with more than maxMut mutations, retrying.")
+  }
+  
+  # Raise error if an admissible genotype matrix could not be simulated 
+  # after maxTries attempts
+  if (counter == maxTries) {
+    stop(print(paste("Could not simulate an admissible genotype matrix for all family members after", 
+                     maxTries, "attempts.")))
+  } 
+  
   # Total number of people in family
   N = nrow(genoMat)
   
@@ -267,5 +311,61 @@ sim.simFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
   fam$race = "All_Races"
   fam$interAge = fam$riskmod = list(character(0))
   
+  # Simulate tumor markers
+  if (includeBiomarkers == TRUE) {
+    if (!(is.null(BiomarkerTesting))) {
+      if ("Breast" %in% cancers) {
+        if (all(c("BRCA1_hetero_anyPV", "BRCA2_hetero_anyPV") %in% genes)) {
+          fam[, names(dim(BiomarkerTesting$Breast))[1:5]] = NA
+          if (sum(fam$isAffBC == 1) > 0) {
+            fam[fam$isAffBC == 1, names(dim(BiomarkerTesting$Breast))[1:5]] =
+              t(apply(fam[fam$isAffBC == 1,c("BRCA1_hetero_anyPV", "BRCA2_hetero_anyPV")], 1, function(x) {
+                probs = BiomarkerTesting$Breast[-1, -1, -1, -1, -1,
+                                                as.character(x["BRCA1_hetero_anyPV"]),
+                                                as.character(x["BRCA2_hetero_anyPV"])]
+                # Need to rescale the probabilities according to how many marker result combos are included in the group
+                probs = probs / apply(probs, 1:length(dim(probs)), function(x){sum(probs==x)})
+                arrayInd(sample(1:length(probs), 1, replace = TRUE, prob = probs),
+                         .dim=rep(2,5)) - 1
+              }))
+          }
+        } else {
+          warning("Need to include both BRCA1_hetero_anyPV and BRCA2_hetero_anyPV to simulate breast cancer markers.")
+        }
+      }  
+      if ("Colorectal" %in% cancers) {
+        if (all(c("MLH1_hetero_anyPV", "MSH2_hetero_anyPV", 
+                  "MSH6_hetero_anyPV", "PMS2_hetero_anyPV") %in% genes)) {
+          fam$MSI = NA
+          if (sum(fam$isAffCOL == 1) > 0) {
+            fam$MSI[fam$isAffCOL == 1] = apply(fam[fam$isAffCOL == 1,
+                                                   c("MLH1_hetero_anyPV", 
+                                                     "MSH2_hetero_anyPV", 
+                                                     "MSH6_hetero_anyPV", 
+                                                     "PMS2_hetero_anyPV")], 1, function(x) {
+              probs = BiomarkerTesting$Colorectal[-1,
+                                                  as.character(x["MLH1_hetero_anyPV"]),
+                                                  as.character(x["MSH2_hetero_anyPV"]),
+                                                  as.character(x["MSH6_hetero_anyPV"]),
+                                                  as.character(x["PMS2_hetero_anyPV"])]
+              sample(c(0,1), 1, replace = TRUE, prob = probs)
+            })
+          }
+        }else {
+          warning("Need to include all four of MLH1_hetero_anyPV, MSH2_hetero_anyPV, MSH6_hetero_anyPV and PMS2_hetero_anyPV to simulate colorectal cancer markers.")
+        }
+      } 
+      
+      if (length(intersect(c("Breast", "Colorectal"), cancers)) == 0) {
+        warning("No cancers with biomarkers were specified, so skipping tumor marker simulations.")
+      }
+    } else {
+      warning("No biomarker testing information supplied, so skipping tumor marker simulations.")
+    }
+  } 
+  
   return(fam)
 }
+
+# fam = sim.simFam(nSibsPatern, nSibsMatern, nSibs, nGrandchild, 
+#                  alleleFreq, CP, BiomarkerTesting=PanelPRODatabase$BiomarkerTesting, genes=genes, cancers=cancers_long, includeBiomarkers = TRUE, includeGeno=TRUE)
