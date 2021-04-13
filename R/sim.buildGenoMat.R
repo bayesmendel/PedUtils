@@ -143,8 +143,6 @@ sim.buildGenoMat = function(alleleFreq, nChildPatern, nChildMatern,
   } else {
     colnames(genoMat) = names(alleleFreq)
   }
-  colnames(genoMat) = PanelPRO:::formatGeneNames(colnames(genoMat), 
-                                                 format = "only_gene")
   
   return(genoMat)
 }

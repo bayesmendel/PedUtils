@@ -1,7 +1,7 @@
 library(PanelPRO)
 library(abind)
 
-#' Simulate a Family/Pedigree Matrix
+#' Underlying Function to Simulate a Family/Pedigree Matrix
 #' 
 #' Returns a completed family matrix with the following columns for each member: 
 #' \itemize{
@@ -75,8 +75,7 @@ library(abind)
 #' error will be raised. These scenarios are more likely to occur for large 
 #' values of alleleFreq. Defaults to 5 (each). 
 #' @details Assumes naming conventions for cancers are consistent between arguments.
-#' @family simulations export
-#' @export
+#' @family simulations 
 sim.simFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild, 
                       alleleFreq, CP, genes, cancers, 
                       maxMut = 2, ageMax = 94, ageMin = 2, 
@@ -288,17 +287,14 @@ sim.simFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
                               ageMax = ageMax, censoring = censoring,
                               affTime = affTime)
   
+  
+  
   # Designate the proband
   isProband = rep(0, length=N)
   isProband[probandID] = 1
   
-  # Put the family pedigree together, including the genotype matrix for all 
-  # members, if necessary
-  if (includeGeno==TRUE) {
-    fam = data.frame(SexParentIDs, isProband, Cancers, genoMat)
-  } else {
-    fam = data.frame(SexParentIDs, isProband, Cancers)
-  }
+  # Put the family pedigree together
+  fam = data.frame(SexParentIDs, isProband, Cancers)
   
   # Drop the grandparents, if necessary
   if (includeGrandparents==FALSE) {
@@ -311,6 +307,7 @@ sim.simFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
   fam$race = "All_Races"
   fam$interAge = fam$riskmod = list(character(0))
   
+  
   # Simulate tumor markers
   if (includeBiomarkers == TRUE) {
     if (!(is.null(BiomarkerTesting))) {
@@ -319,7 +316,9 @@ sim.simFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
           fam[, names(dim(BiomarkerTesting$Breast))[1:5]] = NA
           if (sum(fam$isAffBC == 1) > 0) {
             fam[fam$isAffBC == 1, names(dim(BiomarkerTesting$Breast))[1:5]] =
-              t(apply(fam[fam$isAffBC == 1,c("BRCA1_hetero_anyPV", "BRCA2_hetero_anyPV")], 1, function(x) {
+              t(apply(genoMat[fam$isAffBC == 1,c("BRCA1_hetero_anyPV", 
+                                                 "BRCA2_hetero_anyPV"), 
+                              drop = FALSE], 1, function(x) {
                 probs = BiomarkerTesting$Breast[-1, -1, -1, -1, -1,
                                                 as.character(x["BRCA1_hetero_anyPV"]),
                                                 as.character(x["BRCA2_hetero_anyPV"])]
@@ -338,11 +337,12 @@ sim.simFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
                   "MSH6_hetero_anyPV", "PMS2_hetero_anyPV") %in% genes)) {
           fam$MSI = NA
           if (sum(fam$isAffCOL == 1) > 0) {
-            fam$MSI[fam$isAffCOL == 1] = apply(fam[fam$isAffCOL == 1,
-                                                   c("MLH1_hetero_anyPV", 
-                                                     "MSH2_hetero_anyPV", 
-                                                     "MSH6_hetero_anyPV", 
-                                                     "PMS2_hetero_anyPV")], 1, function(x) {
+            fam$MSI[fam$isAffCOL == 1] = apply(genoMat[fam$isAffCOL == 1,
+                                                       c("MLH1_hetero_anyPV", 
+                                                         "MSH2_hetero_anyPV", 
+                                                         "MSH6_hetero_anyPV", 
+                                                         "PMS2_hetero_anyPV"), 
+                                                       drop = FALSE], 1, function(x) {
               probs = BiomarkerTesting$Colorectal[-1,
                                                   as.character(x["MLH1_hetero_anyPV"]),
                                                   as.character(x["MSH2_hetero_anyPV"]),
@@ -364,8 +364,13 @@ sim.simFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
     }
   } 
   
+  
+  # Include the genotype matrix for all members, if necessary
+  if (includeGeno==TRUE) {
+    colnames(genoMat) = PanelPRO:::formatGeneNames(colnames(genoMat), 
+                                                   format = "only_gene")
+    fam = data.frame(fam, genoMat)
+  } 
+  
   return(fam)
 }
-
-# fam = sim.simFam(nSibsPatern, nSibsMatern, nSibs, nGrandchild, 
-#                  alleleFreq, CP, BiomarkerTesting=PanelPRODatabase$BiomarkerTesting, genes=genes, cancers=cancers_long, includeBiomarkers = TRUE, includeGeno=TRUE)
