@@ -29,12 +29,13 @@ distribution and the grandfather's age will be simulated based on her age.
 }
 \seealso{
 Other simulations: 
-\code{\link{sim.allele2Geno}()},
+\code{\link{sim.buildAlleleArray}()},
 \code{\link{sim.buildBranchOfAlleleMats}()},
 \code{\link{sim.buildGenoMat}()},
 \code{\link{sim.inheritAlleleMat}()},
 \code{\link{sim.linkParents}()},
 \code{\link{sim.simAlleleMat}()},
-\code{\link{sim.simCancerVars}()}
+\code{\link{sim.simCancerVars}()},
+\code{\link{sim.simFam}()}
 }
 \concept{simulations}

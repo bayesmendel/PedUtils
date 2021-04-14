@@ -2,6 +2,6 @@
 
 export(plotPed)
 export(plot_backend)
-export(sim.simFam)
+export(sim.runSimFam)
 import(kinship2)
 importFrom(abind,abind)
