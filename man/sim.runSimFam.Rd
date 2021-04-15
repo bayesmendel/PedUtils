@@ -22,7 +22,6 @@ sim.runSimFam(
   genoMat = NULL,
   CurAge = NULL,
   affTime = FALSE,
-  BiomarkerTesting = NULL,
   includeBiomarkers = FALSE,
   maxTries = 5
 )
@@ -79,8 +78,6 @@ the current ages will be generated.}
 
 \item{affTime}{if TRUE, the output will include the cancer times (which may
 or may not be observed due to censoring). Defaults to FALSE}
-
-\item{BiomarkerTesting}{list of biomarker testing sensitivities and specificities.}
 
 \item{includeBiomarkers}{boolean flag, indicating whether or not to simulate biomarkers
 (Breast and Colorectal currently supported). Defaults to FALSE.}

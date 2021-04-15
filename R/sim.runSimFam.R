@@ -64,7 +64,6 @@ library(abind)
 #' the current ages will be generated.
 #' @param affTime if TRUE, the output will include the cancer times (which may 
 #' or may not be observed due to censoring). Defaults to FALSE
-#' @param BiomarkerTesting list of biomarker testing sensitivities and specificities.
 #' @param includeBiomarkers boolean flag, indicating whether or not to simulate biomarkers 
 #' (Breast and Colorectal currently supported). Defaults to FALSE. 
 #' @param maxTries number of runs to attempt for simulating the allele 
@@ -85,9 +84,7 @@ sim.runSimFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
                          includeGeno = FALSE, includeGrandparents = TRUE, 
                          censoring = TRUE, genderPro = NULL, 
                          genoMat = NULL, CurAge = NULL, affTime = FALSE, 
-                         BiomarkerTesting = NULL, 
-                         includeBiomarkers = FALSE, 
-                         maxTries = 5) {
+                         includeBiomarkers = FALSE, maxTries = 5) {
   
   # Look up short cancer names and include CBC
   cancers_short = c(
