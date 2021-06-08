@@ -1,10 +1,8 @@
 Package: PedUtils
 Title: Simulations and model evaluations used by the BayesMendel lab
 Version: 0.0.0.9000
-Authors@R: c(
-    person("BayesMendel", "Lab", email = "bmendel@jimmy.harvard.edu", role = c("aut", "cre")),
-    person("Gavin", "Lee", role = "aut"),
-    person("Jane", "Liang", role = "aut"))
+Authors@R: 
+    person("BayesMendel", "Lab", email = "bmendel@jimmy.harvard.edu", role = c("aut", "cre"))
 Description: What the package does (one paragraph).
 License: `use_mit_license()`, `use_gpl3_license()` or friends to
     pick a license
