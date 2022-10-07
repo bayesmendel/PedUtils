@@ -6,7 +6,7 @@
 #' @param alleleFreq allele frequencies for each gene of interest 
 #' @family simulations
 sim.simAlleleMat = function(alleleFreq) {
-  return(sapply(alleleFreq, function(x){replicate(2, rbinom(1, 1, x))}))
+  return(matrix(sapply(alleleFreq, function(x){replicate(2, rbinom(1, 1, x))}), nrow = 2))
 }
 
 

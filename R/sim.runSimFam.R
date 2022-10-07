@@ -152,7 +152,7 @@ sim.runSimFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
   # Extract allele frequencies from database
   all_gene_variants = PanelPRO:::DEFAULT_VARIANTS[genes]
   alleles = unique(sub("_.*_", "_", all_gene_variants))
-  alleleFreq = dummy.db$af[,"nonAJ"][alleles]
+  alleleFreq = dummy.db$af[alleles,"nonAJ"]
   names(alleleFreq) = all_gene_variants
   
   

@@ -1,6 +1,3 @@
-library(PanelPRO)
-library(abind)
-
 #' Underlying Function to Simulate a Family/Pedigree Matrix
 #' 
 #' Returns a completed family matrix with the following columns for each member: 

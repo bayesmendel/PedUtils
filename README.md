@@ -2,7 +2,7 @@
 
 Simulations and model evaluations used by the [BayesMendel lab](https://projects.iq.harvard.edu/bayesmendel/home). This repo is updated sporadically, so please contact us if you are having issues. 
 
-Notes on family simulations (files prefixed by `sim.`) 4/13/2021
+Notes on family simulations (files prefixed by `sim.`), updated 10/7/2022
 - Dependencies: `PanelPRO`, `abind`
 - I added my family simulation functions this repo (prefixed with `sim.`). They are compatible with (and dependent on) the current PanelPRO package. 
 - Since the PanelPRO package is still being updated, the simulation functions may also need updates. Please let me know if you run into any issues. 
@@ -54,4 +54,4 @@ Notes for plotting the pedigree (files prefixed by `plot`)
 library(PanelPRO)
 plotPed(small.fam)
 ```
-
+Updated 10/7/2022: The pedigree plotted functions are no longer updated, please see the [visPed](https://github.com/bayesmendel/visPed) package. 

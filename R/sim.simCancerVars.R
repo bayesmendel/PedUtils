@@ -44,8 +44,8 @@ sim.simCancerVars = function(genoMat, Gender, CurAge, CP, PG, cancers,
   }
   
   # Break up the cancer density penetrance matrices
-  cancerDens = list(CP$Dens["1",cancers,PG,], # First person is female (mother)
-                    CP$Dens["2",cancers,PG,]) # Second person is male (her son)
+  cancerDens = list(CP$Dens["1",cancers,PG,,drop=FALSE], # First person is female (mother)
+                    CP$Dens["2",cancers,PG,,drop=FALSE]) # Second person is male (her son)
   
   # Genotype combinations for all people in family 
   genoCombs = sapply(1:nrow(genoMat), function(i){
@@ -90,7 +90,7 @@ sim.simCancerVars = function(genoMat, Gender, CurAge, CP, PG, cancers,
     
     for(i in 1:N){ # Iterate over each person
       # Simulate time person was affected by cancer
-      affectedTime[i] = max(which(rmultinom(1, 1, prob=cancerDens[[Gender[i]+1]][j,genoCombsIdx[i],])[,1]==1), 
+      affectedTime[i] = max(which(rmultinom(1, 1, prob=cancerDens[[Gender[i]+1]][,j,genoCombsIdx[i],,drop=FALSE])[,1]==1), 
                             ageMin)
     }
     

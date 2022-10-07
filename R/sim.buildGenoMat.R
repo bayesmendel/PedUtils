@@ -95,15 +95,18 @@ sim.buildGenoMat = function(alleleFreq, nChildPatern, nChildMatern,
   alleleArray = sim.buildAlleleArray(alleleFreq, nChildPatern, 
                                      nChildMatern, nChild, 
                                      nGrandchildInBranches)
+  
   # Sum array of alleles across the alleles
-  alleleSumMat = apply(alleleArray, 1, function(x) {
-    apply(x, 2, sum)
-  })
+  alleleSumMat = matrix(
+    apply(alleleArray, 1, function(x) {
+      colSums(x)
+    }), ncol = nrow(alleleArray)
+  )
   
   # Flag to see if any family members have pathogenic variants on both 
   # alleles for a given gene
   containsHomo = any(colSums(alleleSumMat) > 2)
-  # Intialize counter for re-runs
+  # Initialize counter for re-runs
   counter = 1
   
   # Re-build allele array until nobody has any homozygous mutations 
@@ -115,9 +118,11 @@ sim.buildGenoMat = function(alleleFreq, nChildPatern, nChildMatern,
                                        nChildMatern, nChild, 
                                        nGrandchildInBranches)
     # Sum array of alleles across the alleles
-    alleleSumMat = apply(alleleArray, 1, function(x) {
-      apply(x, 2, sum)
-    })
+    alleleSumMat = matrix(
+      apply(alleleArray, 1, function(x) {
+        colSums(x)
+      }), ncol = nrow(alleleArray)
+    )
     
     # Flag to see if any family members have pathogenic variants on both 
     # alleles for a given gene
