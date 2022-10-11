@@ -46,12 +46,4 @@ out = PanelPRO:::PanelPRO11(fam)
     - The code assumes that having more than maxMut mutations or having mutations on both alleles is non-admissible (such situations occur more frequently if the allele frequencies are large). Currently, there are no underlying safeguards in the simulation to prevent such scenarios from occurring, so the function's approach is to keep trying to re-simulate the genotype matrix (up to maxTries times) until an admissible genotype has been created for every family member. 
     
     
-    
-Notes for plotting the pedigree (files prefixed by `plot`)
-- Dependencies: kinship2, RColorBrewer
-
-```
-library(PanelPRO)
-plotPed(small.fam)
-```
-Updated 10/7/2022: The pedigree plotted functions are no longer updated, please see the [visPed](https://github.com/bayesmendel/visPed) package. 
+Pedigree-plotting functions (and the `kinship2` and `RColorBrewer` dependencies) are outdated and have been removed. Please see the [visPed](https://github.com/bayesmendel/visPed) package. 
