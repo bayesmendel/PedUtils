@@ -63,8 +63,8 @@ matrix in output. Defaults to FALSE, and was mostly used for troubleshooting.}
 \item{includeGrandparents}{boolean flag, indicating whether to drop the
 grandparents from the final pedigree. Defaults to TRUE.}
 
-\item{censoring}{if FALSE, then will assume everyone without any cancers lives
-to the maximum age. Defaults to TRUE.}
+\item{censoring}{if FALSE, then will assume that nobody dies and that we
+observe everybody's cancer outcomes until they reach \code{ageMax}. Defaults to TRUE.}
 
 \item{genderPro}{Can be set to "Female" or "Male" to designate the gender of the proband.
 If left as NULL, the proband's gender will be randomly generated.}
