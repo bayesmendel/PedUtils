@@ -17,8 +17,8 @@
 #' @param cancers vector of cancers to include in the model. 
 #' @param ageMax maximum age to consider. Defaults to 94. 
 #' @param ageMin minimum age to consider. Defaults to 2. 
-#' @param censoring if FALSE, then will assume everyone without any cancers lives
-#' to the maximum age. Defaults to TRUE.
+#' @param censoring if FALSE, then will assume that nobody dies and that we 
+#' observe everybody's cancer outcomes until they reach `ageMax`. Defaults to TRUE.
 #' @param affTime if TRUE, the output will include the cancer times (which may 
 #' or may not be observed due to censoring). Defaults to FALSE
 #' @details Assumes naming conventions for cancers are consistent between arguments. 

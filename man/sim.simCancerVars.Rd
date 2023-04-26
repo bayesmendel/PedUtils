@@ -36,8 +36,8 @@ number of rows in \code{genoMat}.}
 
 \item{ageMin}{minimum age to consider. Defaults to 2.}
 
-\item{censoring}{if FALSE, then will assume everyone without any cancers lives
-to the maximum age. Defaults to TRUE.}
+\item{censoring}{if FALSE, then will assume that nobody dies and that we
+observe everybody's cancer outcomes until they reach \code{ageMax}. Defaults to TRUE.}
 
 \item{affTime}{if TRUE, the output will include the cancer times (which may
 or may not be observed due to censoring). Defaults to FALSE}
