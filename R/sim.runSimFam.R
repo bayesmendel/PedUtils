@@ -1,4 +1,4 @@
-library(PanelPRO)
+library(Fam3PRO)
 library(abind)
 
 #' Wrapper for Simulating a Family/Pedigree Matrix
@@ -42,8 +42,8 @@ library(abind)
 #' as a vector of length \code{2}, indicating the number of daughters and number of 
 #' sons that the proband and each of her siblings have, when they each have the same 
 #' number.
-#' @param database database to use, in the same format as `PanelPRODatabase` 
-#' from the PanelPRO package
+#' @param database database to use, in the same format as `Fam3PRODatabase` 
+#' from the Fam3PRO package
 #' @param genes vector of genes to include in the model. 
 #' @param cancers vector of cancers to include in the model. 
 #' @param maxMut maximum number of mutations to consider. Defaults to 2. 
@@ -88,8 +88,8 @@ sim.runSimFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
   
   # Look up short cancer names and include CBC
   cancers_short = c(
-    PanelPRO:::CANCER_NAME_MAP$short[sapply(cancers, function(x){
-      which(x==PanelPRO:::CANCER_NAME_MAP$long)
+    Fam3PRO:::CANCER_NAME_MAP$short[sapply(cancers, function(x){
+      which(x==Fam3PRO:::CANCER_NAME_MAP$long)
     })], 
     "CBC"
   )
@@ -121,16 +121,16 @@ sim.runSimFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
   
   ## Get cancer penetrance densities and survivals from the dummy family
   # Build a dummy database
-  dummy.db = buildDatabase(genes=genes, 
-                           cancers=cancers, 
-                           ppd=database)
-  dummy.db$Contralateral = database$Contralateral
+  dummy.db = Fam3PRO::buildDatabase(genes=genes, 
+                           cancers=cancers,
+                           ppd=Fam3PRODatabase,use.mult.variants = FALSE)
+  dummy.db$Contralateral = Fam3PRODatabase$Contralateral
   
   # Run `checkFam` on the dummy family
   dummy.fam.checked = checkFam(dummy.fam, dummy.db)$ped_list[[1]]
   
   # Define possible genotypes
-  PGs = PanelPRO:::.getPossibleGenotype(
+  PGs = Fam3PRO:::.getPossibleGenotype(
     dummy.db$MS$ALL_GENE_VARIANTS, max_mut = maxMut, 
     homo_genes = dummy.db$MS$HOMOZYGOUS)
   
@@ -143,19 +143,28 @@ sim.runSimFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
   multi_muts <- strsplit(PGs$list, split = "\\.")[rowSums(PGs$df) >= 2] 
   
   # Cancer penetrance densities and survivals
-  CP = PanelPRO:::calcCancerPenetrance(
+  CP = Fam3PRO:::calcCancerPenetrance(
     dummy.fam.checked, dummy.fam.checked$ID, 
     dummy.db, sub_dens = NULL, 
     PGs,direct_fill_PGs, multi_PGs, multi_muts, 
     net=TRUE, consider.modification=FALSE)
   
   # Extract allele frequencies from database
-  all_gene_variants = PanelPRO:::DEFAULT_VARIANTS[genes]
+  #available_alleles_in_db <- rownames(dummy.db$af)
+  #genes_to_use <- intersect(genes, available_alleles_in_db)
+
+  all_gene_variants = Fam3PRO:::DEFAULT_VARIANTS[genes]
   alleles = unique(sub("_.*_", "_", all_gene_variants))
   alleleFreq = dummy.db$af[alleles,"nonAJ"]
   names(alleleFreq) = all_gene_variants
   
+ ###########
+  BiomarkerTesting_fixed <- list(
+    Breast =  Fam3PRODatabase$BiomarkerTesting$Breast$SingleVar,    
+    Colorectal =  Fam3PRODatabase$BiomarkerTesting$Colorectal       
+  )
   
+  ###########
   # Simulate family
   fam_PP = sim.simFam(nSibsPatern, nSibsMatern, nSibs, nGrandchild, 
                       alleleFreq, CP, all_gene_variants, cancers, 
@@ -164,7 +173,7 @@ sim.runSimFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
                       includeGrandparents = includeGrandparents, 
                       censoring = censoring, genderPro = genderPro, 
                       genoMat = genoMat, CurAge = CurAge, affTime = affTime, 
-                      BiomarkerTesting = database$BiomarkerTesting, 
+                      BiomarkerTesting =   BiomarkerTesting_fixed, ### changed
                       includeBiomarkers = includeBiomarkers, 
                       maxTries = maxTries)
 }

@@ -44,8 +44,8 @@ as a vector of length \code{2}, indicating the number of daughters and number of
 sons that the proband and each of her siblings have, when they each have the same
 number.}
 
-\item{database}{database to use, in the same format as \code{PanelPRODatabase}
-from the PanelPRO package}
+\item{database}{database to use, in the same format as \code{Fam3PRODatabase}
+from the Fam3PRO package}
 
 \item{genes}{vector of genes to include in the model.}
 

@@ -95,7 +95,7 @@ sim.simFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
   alleleFreq = alleleFreq[genes]
   
   # Get possible genotypes and check that they are in the CP object
-  PG = PanelPRO:::.getPossibleGenotype(genes, max_mut = maxMut)$list
+  PG = Fam3PRO:::.getPossibleGenotype(genes, max_mut = maxMut)$list
   if (any(!(PG %in% dimnames(CP$Dens)$genotypes))) {
     stop("Genotypes that are not in the CP object have been specified.")
   }
@@ -364,7 +364,7 @@ sim.simFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
   
   # Include the genotype matrix for all members, if necessary
   if (includeGeno==TRUE) {
-    colnames(genoMat) = PanelPRO:::formatGeneNames(colnames(genoMat), 
+    colnames(genoMat) = Fam3PRO:::formatGeneNames(colnames(genoMat), 
                                                    format = "only_gene")
     fam = data.frame(fam, genoMat)
   } 

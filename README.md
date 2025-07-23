@@ -2,20 +2,22 @@
 
 Simulations and model evaluations used by the [BayesMendel lab](https://projects.iq.harvard.edu/bayesmendel/home). This repo is updated sporadically, so please contact us if you are having issues. 
 
-Notes on family simulations (files prefixed by `sim.`), updated 10/7/2022
-- Dependencies: `PanelPRO`, `abind`
-- I added my family simulation functions this repo (prefixed with `sim.`). They are compatible with (and dependent on) the current PanelPRO package. 
-- Since the PanelPRO package is still being updated, the simulation functions may also need updates. Please let me know if you run into any issues. 
+Notes on family simulations (files prefixed by `sim.`), updated 7/23/2025
+- Dependencies: `Fam3PRO`, `abind`
+- I added my family simulation functions this repo (prefixed with `sim.`). They are compatible with (and dependent on) the current Fam3PRO package. 
+- Since the Fam3PRO package is still being updated, the simulation functions may also need updates. Please let me know if you run into any issues. 
 - Example usage is below; it calls the `sim.runSimFam` wrapper function for the entire simulation process: 
 
 ```
 # Cancers
 cancers = c("Brain", "Breast", "Colorectal", "Endometrial", 
-            "Gastric", "Kidney", "Melanoma", "Ovarian", 
-            "Pancreas", "Prostate", "Small Intestine")
+            "Gastric", "Kidney","Leukemia", "Melanoma", "Ovarian", 
+            "Osteosarcoma" ,"Pancreas", "Prostate", "Small Intestine",
+            "Soft Tissue Sarcoma","Thyroid","Urinary Bladder","Hepatobiliary")
 # Genes
-genes = c("ATM", "BRCA1", "BRCA2", "CDKN2A", "CHEK2", "EPCAM", 
-          "MLH1", "MSH2", "MSH6", "PALB2", "PMS2")
+genes = c("ATM","BARD1","BRCA1","BRCA2","BRIP1","CDH1","CDK4","CDKN2A","CHEK2",
+          "EPCAM","MLH1","MSH2","MSH6","MUTYH","NBN","PALB2","PMS2","PTEN",  
+          "RAD51C","RAD51D" ,"STK11" , "TP53")
           
 # Paternal aunts, paternal uncles
 nSibsPatern = c(1, 2) 
@@ -30,11 +32,11 @@ nGrandchild = c(1, 2)
 
 # Simulate family using `PedUtils` code
 fam = sim.runSimFam(nSibsPatern, nSibsMatern, nSibs, nGrandchild, 
-                    PanelPRODatabase, genes, cancers, 
+                    Fam3PRODatabase, genes, cancers, 
                     includeGeno = FALSE, includeBiomarkers = TRUE)
                     
-# PanelPRO can be run on the simulated family
-out = PanelPRO:::PanelPRO11(fam)
+# Fam3PRO can be run on the simulated family
+out = Fam3PRO:::Fam3PRO11(fam)
 ```
 
 - The family simulations have several limitations that could be expanded on, including: 
