@@ -123,8 +123,9 @@ sim.runSimFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
   # Build a dummy database
   dummy.db = Fam3PRO::buildDatabase(genes=genes, 
                            cancers=cancers,
-                           ppd=Fam3PRODatabase,use.mult.variants = FALSE)
-  dummy.db$Contralateral = Fam3PRODatabase$Contralateral
+                           ppd=database,use.mult.variants = FALSE)
+
+  dummy.db$Contralateral = database$Contralateral
   
   # Run `checkFam` on the dummy family
   dummy.fam.checked = checkFam(dummy.fam, dummy.db)$ped_list[[1]]
@@ -147,7 +148,7 @@ sim.runSimFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
     dummy.fam.checked, dummy.fam.checked$ID, 
     dummy.db, sub_dens = NULL, 
     PGs,direct_fill_PGs, multi_PGs, multi_muts, 
-    net=TRUE, consider.modification=FALSE)
+    net=TRUE, consider.modification=TRUE)
   
   # Extract allele frequencies from database
   #available_alleles_in_db <- rownames(dummy.db$af)
@@ -160,8 +161,8 @@ sim.runSimFam = function(nSibsPatern, nSibsMatern, nSibs, nGrandchild,
   
  ###########
   BiomarkerTesting_fixed <- list(
-    Breast =  Fam3PRODatabase$BiomarkerTesting$Breast$SingleVar,    
-    Colorectal =  Fam3PRODatabase$BiomarkerTesting$Colorectal       
+    Breast =  database$BiomarkerTesting$Breast$SingleVar,    
+    Colorectal =  database$BiomarkerTesting$Colorectal       
   )
   
   ###########
